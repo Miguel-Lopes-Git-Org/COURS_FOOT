@@ -1,0 +1,50 @@
+name: deploy-prod
+
+on:
+    push:
+        branches:
+            - prod
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        name: Deploy to Docker (self-hosted)
+        runs-on: self-hosted
+        environment: prod
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Validate required secrets
+              shell: bash
+              env:
+                  DB_NAME: ${{ secrets.DB_NAME }}
+                  DB_USER: ${{ secrets.DB_USER }}
+                  DB_PASS: ${{ secrets.DB_PASS }}
+              run: |
+                  test -n "$DB_NAME" || (echo "Missing secret: DB_NAME" && exit 1)
+                  test -n "$DB_USER" || (echo "Missing secret: DB_USER" && exit 1)
+                  test -n "$DB_PASS" || (echo "Missing secret: DB_PASS" && exit 1)
+
+            - name: Create runtime .env for WEB
+              shell: bash
+              run: |
+                  mkdir -p WEB
+                  : > WEB/.env
+                  echo "DB_DRIVER=${{ secrets.DB_DRIVER != '' && secrets.DB_DRIVER || 'pgsql' }}" >> WEB/.env
+                  echo "DB_HOST=${{ secrets.DB_HOST != '' && secrets.DB_HOST || '127.0.0.1' }}" >> WEB/.env
+                  echo "DB_NAME=${{ secrets.DB_NAME }}" >> WEB/.env
+                  echo "DB_USER=${{ secrets.DB_USER }}" >> WEB/.env
+                  echo "DB_PASS=${{ secrets.DB_PASS }}" >> WEB/.env
+                  echo "APP_PORT=${{ secrets.APP_PORT != '' && secrets.APP_PORT || '8080' }}" >> WEB/.env
+
+            - name: Build and deploy containers
+              shell: bash
+              run: |
+                  docker compose -f docker-compose.prod.yml pull || true
+                  docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
+
+            - name: Cleanup dangling images
+              shell: bash
+              run: docker image prune -f
