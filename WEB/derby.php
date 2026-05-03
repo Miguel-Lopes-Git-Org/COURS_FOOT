@@ -30,8 +30,8 @@ $awayScore = 0;
 
 while ($row = pg_fetch_assoc($result)) {
     $time = $row['time_event'];
-    $player = trim($row['name_player'], "'");
-    $team = trim($row['name_team'], "'");
+    $player = trim((string)($row['name_player'] ?? ''), "'");
+    $team = trim((string)($row['name_team'] ?? ''), "'");
     $event = $row['lib'];
 
     $icon = match ($event) {
@@ -66,8 +66,8 @@ $html = '<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Derby</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/derby.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/derby.css">
 </head>
 <body>
     <nav>

@@ -33,8 +33,8 @@ if (pg_num_rows($result) == 0) {
 } else {
     while ($row = pg_fetch_row($result)) {
         $dateMatch = $row[0];
-        $homeTeam = trim($row[1], "'");
-        $awayTeam = trim($row[2], "'");
+        $homeTeam = trim((string)($row[1] ?? ''), "'");
+        $awayTeam = trim((string)($row[2] ?? ''), "'");
         $idMatch = $row[3];
 
         if (empty($homeTeam) || empty($awayTeam) || empty($dateMatch)) {
@@ -42,7 +42,7 @@ if (pg_num_rows($result) == 0) {
         }
 
         $matchesHtml .= '<div class="card-match">
-                            <a href="derby.php?id_match=' . $row[3] . '&home=' . urlencode($homeTeam) . '&away=' . urlencode($awayTeam) . '&id_match=' . urlencode($idMatch) . '">
+                            <a href="derby.php?id_match=' . urlencode((string)$idMatch) . '&home=' . urlencode($homeTeam) . '&away=' . urlencode($awayTeam) . '">
                                 <div class="equipes">
                                     <p class="equipe">' . $homeTeam . '</p>
                                     <p style="font-size: 24px; letter-spacing: 2px;">VS</p>
@@ -54,8 +54,8 @@ if (pg_num_rows($result) == 0) {
                             if ($access) {
                                 $matchesHtml .= '
                                     <div class="edit-delete">
-                                        <a href="edit_match.php?id_match=' . $idMatch . '"><img src="./img/edit.svg"></a>
-                                        <a href="delete_match.php?id_match=' . $idMatch . '"><img src="./img/delete.svg"></a>
+                                        <a href="edit_match.php?id_match=' . $idMatch . '"><img src="/img/edit.svg"></a>
+                                        <a href="delete_match.php?id_match=' . $idMatch . '"><img src="/img/delete.svg"></a>
                                     </div>';
                             }
                         $matchesHtml .= '
@@ -71,8 +71,8 @@ $html = '<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foot Sphere</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/match.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/match.css">
 </head>
 <body>
     <nav>
@@ -95,8 +95,8 @@ $html = '<!DOCTYPE html>
 
         <div class="search-bar">
         <form method="GET" action="match.php">
-            <input type="text" name="search_club" placeholder="Rechercher par club" value="' . htmlspecialchars($searchClub) . '">
-            <input type="date" name="search_date" value="' . htmlspecialchars($searchDate) . '">
+            <input type="text" name="search_club" placeholder="Rechercher par club" value="' . htmlspecialchars((string)$searchClub, ENT_QUOTES, 'UTF-8') . '">
+            <input type="date" name="search_date" value="' . htmlspecialchars((string)($searchDate ?? ''), ENT_QUOTES, 'UTF-8') . '">
             <button type="submit">Rechercher</button>
         </form>
     </div>

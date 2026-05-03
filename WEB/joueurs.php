@@ -25,9 +25,9 @@ if (pg_num_rows($result) == 0) {
     $matchesHtml .= '<p>Aucun match trouvé.</p>';
 } else {
     while ($row = pg_fetch_row($result)) {
-        $namePlayer = trim($row[1], "'");
-        $nameTeam = trim($row[3], "'");
-        $photoTeam = trim($row[4], "'");
+        $namePlayer = trim((string)($row[1] ?? ''), "'");
+        $nameTeam = trim((string)($row[3] ?? ''), "'");
+        $photoTeam = trim((string)($row[4] ?? ''), "'");
 
         if (empty($namePlayer) || empty($nameTeam)) {
             continue;
@@ -53,8 +53,8 @@ $html = '<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foot Sphere</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/joueur.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/joueur.css">
 </head>
 <body>
     <nav>
@@ -84,7 +84,7 @@ $html = '<!DOCTYPE html>
         <a href="mention_legale.php">Mention Légale</a>
     </footer>
 
-    <script src="js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>';
 
